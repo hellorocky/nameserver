@@ -1,14 +1,20 @@
 package com.rockywu.nameserver.controller;
 
 
+import com.sun.corba.se.spi.ior.ObjectKey;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpRequest;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
 
 @RestController
 @RequestMapping(value = "/v1/name")
@@ -20,41 +26,23 @@ public class NameController {
     @Value("${com.rockywu.age}")
     private int age;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public Human GetHuman() {
+    public List<Map<String, Object>> GetHuman() {
 
-//        Map<String, String> map = new HashMap<String, String>();
-//        map.put("username", username);
-//        map.put("hometown", hometown);
-//        map.put("age", age);
-        Human human = new Human();
-        human.setAge(age);
-        human.setUsername(username);
-
-        return human;
-    }
-}
-
-
-class Human {
-    private String username;
-    private int age;
-
-    public void setUsername(String name) {
-        this.username = name;
+        List<Map<String, Object>> list = jdbcTemplate.queryForList("select * from var_name ORDER BY RAND() LIMIT 1");
+        return list;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public int getAge() {
-        return age;
+    @RequestMapping(value = "", method = RequestMethod.POST)
+    public Map<String, Object> PostHuman(@RequestBody Map<String, Object> request) {
+        System.out.println(request);
+        return request;
     }
 
 
 }
+
+
